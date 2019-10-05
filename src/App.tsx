@@ -1,26 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
-const App: React.FC = () => {
+import { Client as Styletron } from 'styletron-engine-atomic';
+import { Provider as StyletronProvider } from 'styletron-react';
+import { LightTheme, BaseProvider } from 'baseui';
+import { SimpleAlgoProps } from "./type"
+import Steps from "./Steps"
+const engine = new Styletron();
+const SimpleAlgo: React.FC<SimpleAlgoProps> = ({ url = "http://hackathon.algodev.network:9100", token, port }) => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <StyletronProvider value={engine}>
+      <BaseProvider theme={LightTheme}>
+        <Steps url={url} token={token} port={port} />
+      </BaseProvider>
+    </StyletronProvider>
   );
 }
 
-export default App;
+export default SimpleAlgo;
