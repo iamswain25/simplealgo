@@ -1,9 +1,10 @@
 import * as React from "react";
+import { JsonToTable } from "react-json-to-table";
 
 import { FormControl } from "baseui/form-control";
 import { Spinner } from "baseui/spinner";
 
-import { Card, StyledBody } from "baseui/card";
+import { Card, StyledBody, StyledAction } from "baseui/card";
 
 import { Textarea } from "baseui/textarea";
 import * as Algosdk from "algosdk";
@@ -61,6 +62,7 @@ export default ({ url, token, port }: SimpleAlgoProps) => {
   });
   const [mneError, setMneError] = React.useState(false);
   const [isLogin, setLogin] = React.useState(false);
+  const [txnStatus, setTxnStatus] = React.useState<any>({});
   const createAccountHandler = React.useCallback(() => {
     const { addr, sk } = Algosdk.generateAccount();
     const mnemonic = Algosdk.secretKeyToMnemonic(sk);
@@ -97,20 +99,44 @@ export default ({ url, token, port }: SimpleAlgoProps) => {
     }
   }
   const [algoAmount, setAlgoAmount] = React.useState<number | null>(null);
-  const [txn, setTxn] = React.useState<Txn>({ fee: "0", isLoading: false });
+  const [txn, setTxn] = React.useState<Txn>({
+    fee: "0",
+    isLoading: false,
+    amount: "100000"
+  });
   const getTxnParams = React.useCallback(() => {
     setTxn({ ...txn, isLoading: true });
-    Promise.all([algod.status(), algod.versions()]).then(([res1, res2]) => {
-      console.log(res1, res2);
-      setTxn({
-        ...txn,
-        firstRound: String(res1.lastRound),
-        lastRound: String(res1.lastRound + 100),
-        genesisHash: res2.genesis_hash_b64,
-        genesisID: res2.genesis_id,
-        isLoading: false
-      });
-    });
+    // Promise.all([algod.status(), algod.versions()]).then(([res1, res2]) => {
+    //   console.log(res1, res2);
+    //   setTxn({
+    //     ...txn,
+    //     firstRound: String(res1.lastRound),
+    //     lastRound: String(res1.lastRound + 100),
+    //     genesisHash: res2.genesis_hash_b64,
+    //     genesisID: res2.genesis_id,
+    //     isLoading: false
+    //   });
+    // });
+    algod
+      .getTransactionParams()
+      .then(
+        (res: {
+          fee: number;
+          consensusVersion: string;
+          genesishashb64: string;
+          genesisID: string;
+          lastRound: number;
+        }) =>
+          setTxn({
+            ...txn,
+            firstRound: String(res.lastRound),
+            lastRound: String(res.lastRound + 100),
+            fee: String(res.fee),
+            genesisHash: res.genesishashb64,
+            genesisID: res.genesisID,
+            isLoading: false
+          })
+      );
   }, [txn, algod, setTxn]);
   React.useEffect(() => {
     if (wallet.addr.length && current === 2) {
@@ -121,16 +147,33 @@ export default ({ url, token, port }: SimpleAlgoProps) => {
     }
   }, [current, algod, wallet.addr]);
 
-  function getSuggestedFee() {
-    setTxn({ ...txn, isLoading: true });
-    algod.suggestedFee().then(({ fee }: { fee: number }) => {
-      setTxn({ ...txn, isLoading: false, fee: String(fee) });
-    });
-  }
   function signSend() {
-    const rawTxn: Algosdk.Txn = {};
-    const signedTxn = Algosdk.signTransaction(rawTxn, wallet.sk);
-    console.log(signedTxn);
+    const rawTxn: Algosdk.Txn = {
+      ...txn,
+      fee: Number(txn.fee),
+      amount: Number(txn.amount),
+      firstRound: Number(txn.firstRound),
+      lastRound: Number(txn.lastRound),
+      note: new Uint8Array(Buffer.from(txn.note || "", "base64"))
+    };
+    try {
+      const { txID, blob } = Algosdk.signTransaction(rawTxn, wallet.sk);
+      console.log(txID);
+      setTxnStatus({ txID });
+      algod.sendRawTransaction(blob).then(console.log);
+      setCurrent(4);
+    } catch (error) {
+      alert(error);
+    }
+  }
+  function checkTxnStatus() {
+    algod
+      .transactionById(txnStatus.txID)
+      .then((res: any) => {
+        setTxnStatus({ ...txnStatus, ...res });
+        console.log(res);
+      })
+      .catch(() => alert("still processing"));
   }
 
   const [useCss, theme] = useStyletron();
@@ -226,7 +269,7 @@ export default ({ url, token, port }: SimpleAlgoProps) => {
               onChange={e => setTxn({ ...txn, to: e.currentTarget.value })}
             />
           </FormControl>
-          <FormControl label="amount">
+          <FormControl label="amount" caption="minimum is 100,000 microalgo">
             <Input
               value={txn.amount}
               onChange={e => setTxn({ ...txn, amount: e.currentTarget.value })}
@@ -251,27 +294,22 @@ export default ({ url, token, port }: SimpleAlgoProps) => {
           <FormControl label="genesisID">
             <Input
               value={txn.genesisID}
-              onChange={e =>
-                setTxn({ ...txn, genesisID: e.currentTarget.value })
-              }
+              // onChange={e =>
+              //   setTxn({ ...txn, genesisID: e.currentTarget.value })
+              // }
+              disabled
             />
           </FormControl>
           <FormControl label="genesisHash">
             <Input
               value={txn.genesisHash}
-              onChange={e =>
-                setTxn({ ...txn, genesisHash: e.currentTarget.value })
-              }
+              // onChange={e =>
+              //   setTxn({ ...txn, genesisHash: e.currentTarget.value })
+              // }
+              disabled
             />
           </FormControl>
-          {/* <FormControl label="closeRemainderTo">
-            <Input
-              value={txn.closeRemainderTo}
-              onChange={e =>
-                setTxn({ ...txn, closeRemainderTo: e.currentTarget.value })
-              }
-            />
-          </FormControl> */}
+
           <FormControl label="note">
             <Textarea
               value={txn.note}
@@ -279,27 +317,33 @@ export default ({ url, token, port }: SimpleAlgoProps) => {
             />
           </FormControl>
           <FormControl label="Fee">
-            <div style={{ display: "flex" }}>
-              <Input
-                value={txn.fee}
-                onChange={e => setTxn({ ...txn, fee: e.currentTarget.value })}
-              />
-              <Button onClick={getSuggestedFee} isLoading={txn.isLoading}>
-                Suggested Fee?
-              </Button>
-            </div>
+            <Input
+              value={txn.fee}
+              disabled
+              // onChange={e => setTxn({ ...txn, fee: e.currentTarget.value })}
+            />
           </FormControl>
         </div>
 
         <SpacedButton onClick={() => setCurrent(2)}>Previous</SpacedButton>
         <SpacedButton onClick={signSend}>Sign and Send</SpacedButton>
       </NumberedStep>
-      <NumberedStep title="Sending complete!">
+      <NumberedStep title="Check transaction status!">
         <div className={useCss({ ...theme.typography.font300 })}>
-          wait and see if the transaction is successful
+          <Card>
+            check if the transaction is successful
+            <StyledBody>
+              <JsonToTable json={txnStatus} />
+            </StyledBody>
+            <StyledAction>
+              <Button onClick={checkTxnStatus}>Check</Button>
+            </StyledAction>
+          </Card>
         </div>
 
-        <SpacedButton onClick={() => setCurrent(3)}>Sign another</SpacedButton>
+        <SpacedButton onClick={() => setCurrent(3)}>
+          Prev: Sign another
+        </SpacedButton>
       </NumberedStep>
     </ProgressSteps>
   );
