@@ -1,12 +1,14 @@
 # simplealgo
 
-React Component for simple algo operations
+> React Component for simple algo operations
 
 ![Example](example.png)
 
 [Demo: https://iamswain25.github.io/simplealgo](https://iamswain25.github.io/simplealgo).
 
 ## Usage
+
+[![NPM](https://img.shields.io/npm/v/simplealgo.svg)](https://www.npmjs.com/package/simplealgo)
 
 it supports both javascript & typescript!
 
@@ -24,7 +26,7 @@ import Simplealgo from "simplealgo";
 
 ## Progress Steps
 
-Streamlined UI with *Base Web Progress steps* [Link](https://baseweb.design/components/progress-steps/)
+Streamlined UI with _Base Web Progress steps_ [Link](https://baseweb.design/components/progress-steps/)
 
 1. Get your Account
 2. Remeber your mnemonic
@@ -36,21 +38,21 @@ Streamlined UI with *Base Web Progress steps* [Link](https://baseweb.design/comp
 
 ### references:
 
-* github repo: https://github.com/algorand/js-algorand-sdk
-* official docs: https://developer.algorand.org/docs/javascript-sdk
+- github repo: https://github.com/algorand/js-algorand-sdk
+- official docs: https://developer.algorand.org/docs/javascript-sdk
 
 ### Stand-Alone
 
-* generateAccount
-* isValidAddress
-* mnemonicToSecretKey
-* secretKeyToMnemonic
-* signTransaction
+- generateAccount
+- isValidAddress
+- mnemonicToSecretKey
+- secretKeyToMnemonic
+- signTransaction
 
 ### algod api
 
-* status
-* transactionById
-* accountInformation
-* getTransactionParams
-* sendRawTransaction
+- status
+- transactionById
+- accountInformation
+- getTransactionParams
+- sendRawTransaction
