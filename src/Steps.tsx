@@ -8,7 +8,7 @@ import { Card, StyledBody, StyledAction } from "baseui/card";
 
 import { Textarea } from "baseui/textarea";
 import * as Algosdk from "algosdk";
-import { SimpleAlgoProps, Txn } from "./type";
+import { Txn, SimpleAlgoProps } from "./type";
 import { ProgressSteps, NumberedStep } from "baseui/progress-steps";
 import { Button, ButtonProps } from "baseui/button";
 import { Input } from "baseui/input";

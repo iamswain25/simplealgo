@@ -4,7 +4,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "removeComments": true,
-    // "declaration": true,
+    "declaration": true,
     "sourceMap": true,
     "target": "esnext",
     "lib": [
@@ -12,7 +12,7 @@
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
+    // "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -23,7 +23,7 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "jsx": "react",
-    "isolatedModules": true
+    // "isolatedModules": true
   },
   "include": [
     "src"
