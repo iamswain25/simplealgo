@@ -34,6 +34,11 @@ Streamlined UI with *Base Web Progress steps* [Link](https://baseweb.design/comp
 
 ## Algo features:
 
+### references:
+
+* github repo: https://github.com/algorand/js-algorand-sdk
+* official docs: https://developer.algorand.org/docs/javascript-sdk
+
 ### Stand-Alone
 
 * generateAccount
