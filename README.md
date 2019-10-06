@@ -1,17 +1,16 @@
-# Simple Algo
+# simplealgo
 
 React Component for simple algo operations
-[Demo https://iamswain25.github.io/simplealgo](https://iamswain25.github.io/simplealgo).
 
-## Process Steps
+![Example](example.png)
 
-1. Get your Account
-2. Remeber your mnemonic
-3. Check the amount of Algo in the wallet
-4. Sign a transaction
-5. Check transaction status!
+[Demo: https://iamswain25.github.io/simplealgo](https://iamswain25.github.io/simplealgo).
 
 ## Usage
+
+it supports both javascript & typescript!
+
+`npm install simplealgo`
 
 ```
 import Simplealgo from "simplealgo";
@@ -22,3 +21,31 @@ import Simplealgo from "simplealgo";
     port={9100}
 />
 ```
+
+## Progress Steps
+
+Streamlined UI with *Base Web Progress steps* [Link](https://baseweb.design/components/progress-steps/)
+
+1. Get your Account
+2. Remeber your mnemonic
+3. Check the amount of Algo in the wallet
+4. Sign a transaction
+5. Check transaction status!
+
+## Algo features:
+
+### Stand-Alone
+
+* generateAccount
+* isValidAddress
+* mnemonicToSecretKey
+* secretKeyToMnemonic
+* signTransaction
+
+### algod api
+
+* status
+* transactionById
+* accountInformation
+* getTransactionParams
+* sendRawTransaction
